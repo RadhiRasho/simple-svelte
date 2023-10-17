@@ -4,6 +4,8 @@
 	$: arr = new Array($count).fill(0);
 </script>
 
+<a href="./test">Test Page</a>
+
 <h1>The count is {$count}</h1>
 
 <button on:click={count.increment}>+</button>
