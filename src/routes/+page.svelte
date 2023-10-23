@@ -7,6 +7,8 @@
 	let color: string = 'red';
 	let size: number = 50;
 
+	let showMenu = false;
+
 	let canvas: HTMLCanvasElement;
 	let context: CanvasRenderingContext2D | null;
 	let previous: { x: any; y: any } | null;
@@ -35,29 +37,42 @@
 		return { x, y };
 	}
 
-	function capture_state() {
-		const state = canvas.toDataURL();
-		images = [state, ...images];
+	function closeMenu(e: any) {
+		if (e.key === 'Escape') showMenu = false;
 	}
 </script>
 
-<div class="colors">
-	{#each colors as selectable}
-		<button
-			class="color"
-			style="background: {selectable}"
-			class:active={color === selectable}
-			on:click={() => (color = selectable)}
-		/>
-	{/each}
-	<div class="range">
-		small
-		<input type="range" min="1" max="100" bind:value={size} />
-		large
-	</div>
-</div>
 
 <div class="main-section">
+	<button
+		class="menu-btn"
+		on:click={() => showMenu = !showMenu}
+		on:keydown={closeMenu}>
+		{showMenu ? 'Close' : 'Open'}
+	</button>
+	{#if showMenu }
+	<div role="button" tabindex="0" class="model-background"
+		on:click|self={() => showMenu = false}
+		on:keydown={closeMenu}>
+		<div class="menu">
+			<div>
+				{#each colors as selectable}
+				<button
+				class="color"
+				style="background: {selectable}"
+				class:active={color === selectable}
+				on:click={() => (color = selectable)}
+				/>
+				{/each}
+			</div>
+			<div class="range">
+			small
+			<input type="range" min="1" max="100" bind:value={size} />
+			large
+		</div>
+	</div>
+	</div>
+	{/if}
 	<canvas
 		bind:this={canvas}
 		on:pointerdown={(e) => {
@@ -71,7 +86,6 @@
 
 			previous = coords;
 		}}
-		on:pointerup={capture_state}
 		on:pointerleave={() => (previous = null)}
 		on:pointermove={(e) => {
 			const coords = get_coords(e);
@@ -92,23 +106,30 @@
 			previous = coords;
 		}}
 	/>
-	<div class="images">
-		{#each images as src, key}
-			<img alt={key.toString()} {src} />
-		{/each}
-	</div>
 </div>
 
 <style>
 	:global(body) {
 		background: black;
+		margin: 0;
+	}
+
+	.menu-btn {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		padding: 10px;
+		z-index: 9999999;
+		background-color: cyan;
+		color: black;
+		border-radius: 50px;
+		scale: 1.2;
 	}
 
 	canvas {
-		background: #eee;
-		border: 1px solid #ccc;
-		width: 75vw;
-		height: 90vh;
+		background: black;
+		width: 100vw;
+		height: 100vh;
 	}
 
 	.color {
@@ -122,13 +143,34 @@
 		}
 	}
 
-	.colors {
+	.model-background {
+		height: 100vh;
+		width: 100vw;
+		backdrop-filter: blur(20px);
+
+		z-index: 99999;
+		position: absolute;
+	}
+
+	.menu {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 		flex-wrap: wrap;
 		border: 1px solid red;
 		margin-bottom: 10px;
 		gap: 15px;
+		padding: 20px;
+		border-radius: 30px;
+		background-color: black;
+		backdrop-filter: blur(20px);
+
+		position: absolute;
+		top: 25rem;
+		left: 40rem;
+
+		z-index: 99999;
 	}
 
 	.main-section {
