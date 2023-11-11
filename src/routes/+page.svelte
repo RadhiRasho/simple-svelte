@@ -158,17 +158,18 @@
 		justify-content: center;
 		align-items: center;
 		flex-wrap: wrap;
-		border: 1px solid red;
+		border: 1px solid white;
 		margin-bottom: 10px;
 		gap: 15px;
 		padding: 20px;
 		border-radius: 30px;
-		background-color: black;
+		background-color: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(20px);
 
+		top: 35%;
+		left: 35%;
+
 		position: absolute;
-		top: 25rem;
-		left: 40rem;
 
 		z-index: 99999;
 	}
@@ -177,6 +178,8 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+		max-width: 100vw;
+		max-height: 100vh;
 	}
 
 	.images {
