@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 
 	let colors: string[] = ['red', 'green', 'blue', 'yellow', 'violet', 'orange'];
-	let images: string[] = [];
+
+	let socket: WebSocket;
 
 	let color: string = 'red';
 	let size: number = 50;
@@ -12,6 +13,14 @@
 	let canvas: HTMLCanvasElement;
 	let context: CanvasRenderingContext2D | null;
 	let previous: { x: any; y: any } | null;
+
+	afterUpdate(() => {
+		socket = new WebSocket('wss://localhost:8080');
+
+		socket.onerror = function (event) {
+			console.log('error', event);
+		};
+	});
 
 	onMount(() => {
 		context = canvas.getContext('2d');
@@ -40,38 +49,47 @@
 	function closeMenu(e: any) {
 		if (e.key === 'Escape') showMenu = false;
 	}
+
+	$: if (socket) console.log(socket.readyState);
 </script>
 
-
 <div class="main-section">
-	<button
-		class="menu-btn"
-		on:click={() => showMenu = !showMenu}
-		on:keydown={closeMenu}>
-		{showMenu ? 'Close' : 'Open'}
-	</button>
-	{#if showMenu }
-	<div role="button" tabindex="0" class="model-background"
-		on:click|self={() => showMenu = false}
-		on:keydown={closeMenu}>
-		<div class="menu">
-			<div>
-				{#each colors as selectable}
-				<button
-				class="color"
-				style="background: {selectable}"
-				class:active={color === selectable}
-				on:click={() => (color = selectable)}
-				/>
-				{/each}
+	<div class="buttons">
+		<button class="menu-btn" on:click={() => (showMenu = !showMenu)} on:keydown={closeMenu}>
+			{showMenu ? 'Close' : 'Open'}
+		</button>
+		{#if socket}
+			<div style="color: red;">
+				{socket.readyState}
 			</div>
-			<div class="range">
-			small
-			<input type="range" min="1" max="100" bind:value={size} />
-			large
+		{/if}
+	</div>
+	{#if showMenu}
+		<div
+			role="button"
+			tabindex="0"
+			class="model-background"
+			on:click|self={() => (showMenu = false)}
+			on:keydown={closeMenu}
+		>
+			<div class="menu">
+				<div>
+					{#each colors as selectable}
+						<button
+							class="color"
+							style="background: {selectable}"
+							class:active={color === selectable}
+							on:click={() => (color = selectable)}
+						/>
+					{/each}
+				</div>
+				<div class="range">
+					small
+					<input type="range" min="1" max="100" bind:value={size} />
+					large
+				</div>
+			</div>
 		</div>
-	</div>
-	</div>
 	{/if}
 	<canvas
 		bind:this={canvas}
@@ -114,6 +132,12 @@
 		margin: 0;
 	}
 
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
 	.menu-btn {
 		position: absolute;
 		top: 1rem;
@@ -124,6 +148,13 @@
 		color: black;
 		border-radius: 50px;
 		scale: 1.2;
+	}
+
+	.menu-btn.share {
+		background-color: cyan;
+		position: absolute;
+		top: 1rem;
+		left: 6rem;
 	}
 
 	canvas {
@@ -180,22 +211,6 @@
 		align-items: center;
 		max-width: 100vw;
 		max-height: 100vh;
-	}
-
-	.images {
-		border: white 1px solid;
-		display: flex;
-		flex-direction: column;
-		height: 90vh;
-		width: 25vw;
-		overflow-y: auto;
-		gap: 10px;
-
-		& > img {
-			width: 100%;
-			background-color: transparent;
-			border: 1px solid white;
-		}
 	}
 
 	.range {
