@@ -27,22 +27,22 @@
 </script>
 
 <div class="main">
-  <div class="root" use:melt={$root}>
-    {#each items as { id, title, description }}
-		<div use:melt={$item(id)} class="item">
-			<h2>
-        <button use:melt={$trigger(id)} class="trigger">
-					{title}
-				</button>
-			</h2>
-			{#if $isSelected(id)}
-      <div class="content" use:melt={$content(id)} transition:slide>
-        <div>{description}</div>
-      </div>
-			{/if}
-		</div>
-    {/each}
-  </div>
+	<div class="root" use:melt={$root}>
+		{#each items as { id, title, description }}
+			<div use:melt={$item(id)} class="item">
+				<h2>
+					<button use:melt={$trigger(id)} class="trigger">
+						{title}
+					</button>
+				</h2>
+				{#if $isSelected(id)}
+					<div class="content" use:melt={$content(id)} transition:slide>
+						<div>{description}</div>
+					</div>
+				{/if}
+			</div>
+		{/each}
+	</div>
 </div>
 
 <style>
@@ -59,22 +59,22 @@
 		animation: spin infinite 100s linear;
 	}
 
-  .main::after {
-    content: "";
-    position: absolute;
-  }
+	.main::after {
+		content: '';
+		position: absolute;
+	}
 
 	@keyframes spin {
-    from {
-      transform: rotate(0deg);
+		from {
+			transform: rotate(0deg);
 		}
 		to {
-      transform: rotate(360deg);
+			transform: rotate(360deg);
 		}
 	}
 
 	.root {
-    animation: spin infinite 100s linear reverse;
+		animation: spin infinite 100s linear reverse;
 		position: absolute;
 		width: 100%;
 		max-width: 28rem;
